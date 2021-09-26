@@ -1,0 +1,12 @@
+*.pyc
+*~
+__pycache__
+Scripts
+myvenv
+db.sqlite3
+/static
+.DS_Store
+venv
+code/in.*
+.vscode
+Lib

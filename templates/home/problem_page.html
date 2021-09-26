@@ -1,0 +1,46 @@
+{% extends "home/base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+  <hr>
+  {% for message in messages %}
+  {{message}}
+  {% endfor %}
+ <div class="container-lg">
+    
+   <div class="sticky-md-top"><h1>{{prblm.problemName}}</h1></div>
+          
+    <div class="text-light bg-dark" >
+     {{prblm.statement}}
+         </div>
+         <br>
+     <br>
+  
+  <form action = "{% url 'submit' prblm.problemid %}" method = "POST">
+    {% csrf_token %} 
+  <fieldset >
+    
+      <div class="mb-3">
+      <label for="user_solution" class="form-label">submit code:</label>
+      <textarea class="form-control" name="user_solution"  id="user_solution" rows="20"></textarea>
+       </div>
+    <div class="mb-3">
+      <label for="language" class="form-label">select language</label>
+      <select id="language" name="language" class="form-select" >
+        <option>C++</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary" >Submit</button>
+  </fieldset>
+</form>
+</div>
+ 
+
+
+
+
+
+
+
+{% endblock content %}

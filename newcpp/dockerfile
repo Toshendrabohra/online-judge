@@ -1,0 +1,11 @@
+FROM gcc:latest
+
+COPY . /usr/src/compiler
+
+WORKDIR /usr/src/compiler
+
+RUN g++ -o compiler  maintry.cpp
+
+#CMD [ "./compiler" ]
+
+RUN  ./compiler < input.txt > output.txt 

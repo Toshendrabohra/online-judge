@@ -1,0 +1,38 @@
+{% extends "home/base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+<p class="text-success"> USER: {{user.username}}</p>
+ <div class="col-md-8">
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+      
+      </div>
+<div class='pset'>
+  <h1> Problem Set</h1>
+  <table class="table table-dark table-hover table-striped">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Problem Name</th>
+        <th scope="col">Difficulty</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for problem in problems %}
+<tr>
+      
+        <td>{{problem.problemid}}</td>
+        <td><a  href="{%url 'problem_page' problem.problemid %}"> {{ problem.problemName }}</a></td>
+        <td> {{ problem.difficulty }}</td>
+     </tbody>   
+ </tr>       
+    {% endfor %}
+  </table>
+</div>
+{%endblock content%}
