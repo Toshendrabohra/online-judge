@@ -3,9 +3,9 @@ from django.http.request import HttpRequest
 from django.http import Http404
 from django.shortcuts import render ,redirect
 from django.http import HttpResponse
-from django .contrib import messages
-from .models import problemset,solutions,testcase
-
+from django.contrib import messages
+from .models import Problemset,Submission,Testcase,User
+from django.contrib.auth.decorators import login_required
 from .forms import UserSolution
 import os
 import subprocess
@@ -14,12 +14,12 @@ import subprocess
 
 def index(request):
     context = {
-        'problems' : problemset.objects.all()
+        'problems' : Problemset.objects.all()
     }
     return render(request,'home/index.html',context)
 
 def leaderboard(request):
-     last =solutions.objects.all()
+     last =Submission.objects.all()
      latest = []
      for i in reversed(last):
         latest.append(i)
@@ -32,23 +32,36 @@ def leaderboard(request):
 
 def problem_page(request,pid):
     context ={
-        'prblm' :problemset.objects.get(problemid=pid)
+        'prblm' :Problemset.objects.get(problem_id=pid)
     }
     return render(request,'home/problem_page.html',context)
 
-def checker(id,code,input,output):
-    verdict="wa" 
+@login_required
+def submit(request,pid):
+    if request.method == 'POST':
+         problem=Problemset.objects.get(problem_id=pid)
+         code = request.POST.get('user_submission')
+         current_user = User.objects.get(id=request.user.id)
+         verdict_="wa"
+         #checker(pid,code,current_user,problem.problem_id,code,Testcase.objects.get(problemid=problem.problemid).input, Testcase.objects.get(problemid=problem.problemid).output)
+         submission=Submission(problem_id=problem, user_id=current_user, verdict=verdict_, user_submission=code, problem_name=problem.problem_name)
+         submission.save()
+    return redirect('leaderboard')
+       
+def checker(pid,code,current_user):
+    
     os.chdir('newcpp')
-    file =open('maintry.cpp','w')
+    file=open('code.cpp','w')
     file.write(code)
     file.close()
+
     file_input = open('input.txt', 'w')
     file_input.write(input)
     file_input.close()
     file_output = open('output1.txt', 'w')
     file_output.write(output)
     file_output.close()
-    data, temp = os.pipe()
+    #container_name=
   
     # write to STDIN as a byte object(convert string
     # to bytes with encoding utf8)
@@ -67,14 +80,3 @@ def checker(id,code,input,output):
         verdict = "accepted"
     os.chdir('..')
     return verdict
-
-def submit(request,pid):
-    if request.method == 'POST':
-         problem=problemset.objects.get(problemid=pid)
-         code = request.POST.get('user_solution')
-         current_user = request. user
-         verdict_=checker(problem.problemid,code,testcase.objects.get(problemid=problem.problemid).input, testcase.objects.get(problemid=problem.problemid).output)
-         solution=solutions( problemid=problem.problemid,userid=current_user ,verdict=verdict_ ,usersolution=code,problemname=problem.problemName)
-         solution.save()
-    return redirect('leaderboard')
-       

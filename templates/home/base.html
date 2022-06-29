@@ -48,7 +48,8 @@ border :1px solid black
     {%if user.is_authenticated %}
    
     <a class="navbar-brand" href={%url 'home'%} style="font-size:30px" >
-      <img src="https://coollogo.net/wp-content/uploads//2021/03/Waves-WAVES-logo.svg" alt="" width="40" height="34" class="d-inline-block align-text-top">
+      {% load static %}
+      <img src={% static "home/logo.jpg" %} alt="" width="40" height="34" class="d-inline-block align-text-top">
      Online judge
     </a>
     

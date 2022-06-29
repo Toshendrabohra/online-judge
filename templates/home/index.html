@@ -25,13 +25,12 @@
     </thead>
     <tbody>
     {% for problem in problems %}
-<tr>
-      
-        <td>{{problem.problemid}}</td>
-        <td><a  href="{%url 'problem_page' problem.problemid %}"> {{ problem.problemName }}</a></td>
+    <tr>
+        <td>{{problem.problem_id}}</td>
+        <td><a  href="{%url 'problem_page' problem.problem_id %}"> {{ problem.problem_name }}</a></td>
         <td> {{ problem.difficulty }}</td>
      </tbody>   
- </tr>       
+    </tr>       
     {% endfor %}
   </table>
 </div>

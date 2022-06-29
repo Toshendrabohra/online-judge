@@ -17,11 +17,11 @@
    
     {%for submission in submissions%}
      <tr>
-      <td scope="row">{{submission.problemid}}</td>
-      <td>{{submission.problemname}}</td>
-      <td>{{submission.userid}}</td>
+      <td scope="row">{{submission.problem_id}}</td>
+      <td>{{submission.problem_name}}</td>
+      <td>{{submission.user_id}}</td>
       <td>{{submission.verdict}}</td>
-      <td>{{submission.submitTime}}</td>
+      <td>{{submission.submission_time}}</td>
       </tr>
      {%endfor%} 
     

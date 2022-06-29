@@ -1,7 +1,8 @@
 from django.contrib import admin
-from .models import problemset,solutions,testcase
+from .models import  Problemset,Submission,Testcase
 
-admin.site.register(problemset)
-admin.site.register(solutions)
-admin.site.register(testcase)
+
+admin.site.register(Problemset)
+admin.site.register(Submission)
+admin.site.register(Testcase)
 # Register your models here.

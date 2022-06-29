@@ -9,21 +9,21 @@
   {% endfor %}
  <div class="container-lg">
     
-   <div class="sticky-md-top"><h1>{{prblm.problemName}}</h1></div>
+   <div class="sticky-md-top"><h1>{{prblm.problem_name}}</h1></div>
           
     <div class="text-light bg-dark" >
-     {{prblm.statement}}
+     {{ prblm.statement | linebreaks }} 
          </div>
          <br>
      <br>
   
-  <form action = "{% url 'submit' prblm.problemid %}" method = "POST">
+  <form action = "{% url 'submit' prblm.problem_id %}" method = "POST">
     {% csrf_token %} 
   <fieldset >
     
       <div class="mb-3">
-      <label for="user_solution" class="form-label">submit code:</label>
-      <textarea class="form-control" name="user_solution"  id="user_solution" rows="20"></textarea>
+      <label for="user_submission" class="form-label">submit code:</label>
+      <textarea class="form-control" name="user_submission"  id="user_submission" rows="20"></textarea>
        </div>
     <div class="mb-3">
       <label for="language" class="form-label">select language</label>

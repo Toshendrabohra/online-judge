@@ -5,5 +5,6 @@ urlpatterns = [
     path("", views.index,name="home"),
     path("leaderboard", views.leaderboard,name="leaderboard"),
     path("problem_page/<int:pid>",views.problem_page,name="problem_page"),
-    path("submit/<int:pid>",views.submit,name="submit")
+    path("submit/<int:pid>",views.submit,name="submit"),
+    path('',include('users.urls')),
 ]
