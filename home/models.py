@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 # Create your models here.
 
 class Problemset(models.Model):
-        problem_id=models.BigAutoField(primary_key=True,default=1)
+        problem_id=models.BigAutoField(primary_key=True)
         problem_name=models.CharField(max_length=100)
         difficulty=models.CharField(max_length=100)
         statement=models.TextField()
@@ -19,7 +19,7 @@ class Problemset(models.Model):
 class Submission(models.Model):
         submission_id=models.BigAutoField(primary_key=True)
         user_id=models.ForeignKey(User,on_delete=models.CASCADE)
-        problem_id=models.ForeignKey(Problemset,on_delete=models.CASCADE)
+        problem_id=models.ForeignKey(Problemset, on_delete=models.CASCADE)
         verdict=models.CharField(max_length=100)
         submission_time=models.DateTimeField(default=timezone.now)
         user_submission=models.TextField()
@@ -33,7 +33,7 @@ class Submission(models.Model):
 
 class Testcase(models.Model):
         testcase_id=models.BigAutoField(primary_key=True)
-        problem_id=models.ForeignKey(Problemset,on_delete=models.CASCADE)
+        problem_id=models.ForeignKey(Problemset, on_delete=models.CASCADE)
         input=models.TextField()
         output=models.TextField()
 
