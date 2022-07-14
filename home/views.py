@@ -57,7 +57,7 @@ def checker(problem, code):
     file = open('code.cpp', 'w')
     file.write(code)
     file.close()
-    stop_prev_if_any_container = subprocess.run(['docker', 'stop', 'compiler'])
+    subprocess.run(['docker', 'stop', 'compiler'])
     run_container = subprocess.run(['docker', 'run', '-d', '-t', '--rm', '--name', 'compiler', 'oj_soundbox'])
     copy_code = subprocess.run(['docker', 'cp', 'code.cpp', 'compiler:/in_container'])
     executable = subprocess.run(['docker', 'exec', 'compiler','g++', '-o', 'executable_file' ,'code.cpp'], capture_output=True, text=True,shell=True)
@@ -66,32 +66,28 @@ def checker(problem, code):
     testcases = Testcase.objects.filter(problem_id = problem)
     is_correct = True   
     is_compile_error = False
-    compiler_err_msg = None
     if executable.returncode == 1:
         is_correct = False
         is_compile_error = True
-        compiler_err_msg = executable.stderr
-    if is_correct == True:        
+        err_msg = executable.stderr
+    if not is_compile_error :        
         for testcase in testcases:
             stdout = run_tests(testcase)
-            if not stdout:
-                is_correct = stdout
+            if not stdout[0]:
+                is_correct = stdout[0]
+                err_msg = stdout[1]
                 break
-
     if not is_correct:
         if not is_compile_error:
-            verdict = "wrong answer :("
+            verdict = "wrong answer :( \n your output {}".format(err_msg)
         else:
-            compiler_err_msg = "Compile error :( " + compiler_err_msg
-            verdict = compiler_err_msg
+            verdict = "Compile error :( " + err_msg
     else:
         verdict = "Accepted"
-    stop_container = subprocess.run(['docker', 'stop', 'compiler'])
+    subprocess.run(['docker', 'stop', 'compiler'])
     os.chdir('..')
     return verdict
     
-
-
 
 def run_tests(testcase):
     file_input = open('input.txt', 'w')
@@ -112,9 +108,11 @@ def run_tests(testcase):
 
     #to copy generated ouput    
     subprocess.run(['docker', 'cp', 'compiler:/in_container/output.txt', 'output.txt'])
-    
-
-    return True
+    diff = subprocess.run("FC /W std_output.txt output.txt",shell=True,capture_output=True)    
+    text_file = open("output.txt", "r")
+    data = text_file.read()
+    text_file.close()
+    return [diff.returncode == 0,data]
     
    
    
