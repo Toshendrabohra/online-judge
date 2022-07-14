@@ -1,5 +1,7 @@
+from asyncio.subprocess import PIPE
 from cgi import test
 from operator import is_
+from re import sub
 from django.contrib.auth.signals import user_logged_in
 from django.http.request import HttpRequest 
 from django.http import Http404
@@ -55,28 +57,36 @@ def checker(problem, code):
     file = open('code.cpp', 'w')
     file.write(code)
     file.close()
-    subprocess.Popen(['g++', 'code.cpp'], shell=True)
+    stop_prev_if_any_container = subprocess.run(['docker', 'stop', 'compiler'])
+    run_container = subprocess.run(['docker', 'run', '-d', '-t', '--rm', '--name', 'compiler', 'oj_soundbox'])
+    copy_code = subprocess.run(['docker', 'cp', 'code.cpp', 'compiler:/in_container'])
+    executable = subprocess.run(['docker', 'exec', 'compiler','g++', '-o', 'executable_file' ,'code.cpp'], capture_output=True, text=True,shell=True)
+    if run_container.returncode == 1 or copy_code.returncode == 1:
+        return " ServerError "
     testcases = Testcase.objects.filter(problem_id = problem)
-    is_correct = True
+    is_correct = True   
     is_compile_error = False
     compiler_err_msg = None
-    for testcase in testcases:
-        stdout = run_tests(testcase)
-        if not stdout[0]:
-            is_correct = stdout[0]
-            is_compile_error = stdout[2]
-            compiler_err_msg = stdout[1]
-            break
+    if executable.returncode == 1:
+        is_correct = False
+        is_compile_error = True
+        compiler_err_msg = executable.stderr
+    if is_correct == True:        
+        for testcase in testcases:
+            stdout = run_tests(testcase)
+            if not stdout:
+                is_correct = stdout
+                break
 
     if not is_correct:
         if not is_compile_error:
             verdict = "wrong answer :("
         else:
-            compiler_err_msg += "Compile error :("
+            compiler_err_msg = "Compile error :( " + compiler_err_msg
             verdict = compiler_err_msg
     else:
         verdict = "Accepted"
-
+    stop_container = subprocess.run(['docker', 'stop', 'compiler'])
     os.chdir('..')
     return verdict
     
@@ -87,14 +97,25 @@ def run_tests(testcase):
     file_input = open('input.txt', 'w')
     file_input.write(testcase.input)
     file_input.close()
-    file_output = open('output.txt', 'w')
+    file_output = open('std_output.txt', 'w')
     file_output.write(testcase.output)
     file_output.close()
-    pipedoutput = subprocess.run('a.exe',input=testcase.input, shell=True, capture_output=True, text=True)
-    print('error', pipedoutput.stdout)
-    return [pipedoutput.stdout.splitlines() == testcase.output.splitlines(), pipedoutput.stdout, pipedoutput.returncode != 0]
-    # s = subprocess.check_output("g++ -o out2 maintry.cpp  ; ./out2", stdin = data, shell = True)
-    # os.system("docker cp my-running-app:/usr/src/compiler/output.txt output.txt")
-    # os.system("docker stop my-running-app")
+
+    #copy input.txt
+    subprocess.run(['docker', 'cp', 'input.txt', 'compiler:/in_container']) 
+    #to create output.txt inside container
+    subprocess.run(['docker', 'cp', 'output.txt', 'compiler:/in_container'])
+
+    output_generation = subprocess.run(f'docker exec compiler sh -c "./executable_file <input.txt> output.txt"',shell=True)
+    if output_generation.returncode == 1:
+        return False
+
+    #to copy generated ouput    
+    subprocess.run(['docker', 'cp', 'compiler:/in_container/output.txt', 'output.txt'])
+    
+
+    return True
+    
+   
    
     
