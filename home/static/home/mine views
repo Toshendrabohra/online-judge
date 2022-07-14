@@ -1,0 +1,11 @@
+ #  { #os.system('docker build -t compiler .')
+    os.system("docker run -d -it --rm --name my-running-app compiler")
+    os.system("docker cp input.txt my-running-app:/usr/src/compiler/input.txt")
+    os.system("docker cp maintry.cpp my-running-app:/usr/src/compiler/maintry.cpp")
+    os.system("docker exec -d my-running-app rm executable")
+    os.system("docker exec -d my-running-app g++ -o executable maintry.cpp")
+    os.system("docker exec -t my-running-app  ./executable < input.txt > output.txt")
+    os.system("docker cp my-running-app:/usr/src/compiler/output.txt output.txt")
+    os.system("docker stop my-running-app")
+  
+   } 
