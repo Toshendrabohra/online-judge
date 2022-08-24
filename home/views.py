@@ -15,7 +15,7 @@ import os
 import subprocess
 
 # Create your views here.
-
+@login_required
 def index(request):
     context = {
         'problems' : Problemset.objects.all()
@@ -23,12 +23,7 @@ def index(request):
     return render(request,'home/index.html',context)
 
 def leaderboard(request):
-     last =Submission.objects.all()
-     latest = []
-     for i in reversed(last):
-        latest.append(i)
-        if(len(latest) == 15):
-            break
+     latest =Submission.objects.all()[:15]
      context = {
         "submissions": latest
      }
@@ -40,7 +35,7 @@ def problem_page(request,pid):
     }
     return render(request,'home/problem_page.html',context)
 
-@login_required
+
 def submit(request,pid):
     if request.method == 'POST':
          problem = Problemset.objects.get(problem_id = pid)
@@ -53,12 +48,13 @@ def submit(request,pid):
     return redirect('leaderboard')
        
 def checker(problem, code):
+    # print(os.getcwd()) #prints cur directory
     os.chdir('newcpp')
     file = open('code.cpp', 'w')
     file.write(code)
     file.close()
     subprocess.run(['docker', 'stop', 'compiler'])
-    run_container = subprocess.run(['docker', 'run', '-d', '-t', '--rm', '--name', 'compiler', 'oj_soundbox'])
+    run_container = subprocess.run(['docker', 'run', '-d', '-t', '--rm', '--name', 'compiler', 'saitama26/oj_sandbox'])
     copy_code = subprocess.run(['docker', 'cp', 'code.cpp', 'compiler:/in_container'])
     executable = subprocess.run(['docker', 'exec', 'compiler','g++', '-o', 'executable_file' ,'code.cpp'], capture_output=True, text=True,shell=True)
     if run_container.returncode == 1 or copy_code.returncode == 1:
@@ -108,11 +104,11 @@ def run_tests(testcase):
 
     #to copy generated ouput    
     subprocess.run(['docker', 'cp', 'compiler:/in_container/output.txt', 'output.txt'])
-    diff = subprocess.run("FC /W std_output.txt output.txt",shell=True,capture_output=True)    
+    diff = subprocess.run("FC /W std_output.txt output.txt", shell=True, capture_output=True)    
     text_file = open("output.txt", "r")
     data = text_file.read()
     text_file.close()
-    return [diff.returncode == 0,data]
+    return [diff.returncode == 0, data]
     
    
    
