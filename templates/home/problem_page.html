@@ -3,37 +3,55 @@
 {% load crispy_forms_tags %}
 {% block content %}
 
-  <hr>
-  {% for message in messages %}
-  {{message}}
-  {% endfor %}
- <div class="container-lg">
-    
-   <div class="sticky-md-top"><h1>{{prblm.problem_name}}</h1></div>
-          
-    <div class="text-light bg-dark" >
-     {{ prblm.statement | linebreaks }} 
-         </div>
-         <br>
-     <br>
-  
-  <form action = "{% url 'submit' prblm.problem_id %}" method = "POST">
-    {% csrf_token %} 
-  <fieldset >
-    
-      <div class="mb-3">
-      <label for="user_submission" class="form-label">submit code:</label>
-      <textarea class="form-control" name="user_submission"  id="user_submission" rows="20"></textarea>
-       </div>
-    <div class="mb-3">
-      <label for="language" class="form-label">select language</label>
-      <select id="language" name="language" class="form-select" >
-        <option>C++</option>
-      </select>
+{% for message in messages %}
+{{message}}
+{% endfor %}
+<div class="container-lg">
+
+  <div>
+    <h1>{{prblm.problem_name}}</h1>
+  </div>
+
+  <div class="text-light bg-dark">
+    {{ prblm.statement | linebreaks }}
+  </div>
+
+  <div class="example-box">
+    <p class="example-heading">Example :-</p>
+    <div class="input-output-box mb-2">
+      <div class="example-inner-heading">
+        <p>Input</p>
+      </div>
+      <div class=" input-output-inner-box border border-secondary rounded">
+
+      </div>
     </div>
-    <button type="submit" class="btn btn-primary" >Submit</button>
-  </fieldset>
-</form>
+    <div class="input-output-box mb-2">
+      <div class="example-inner-heading">
+        <p>Output</p>
+      </div>
+      <div class="  input-output-inner-box border border-secondary rounded">
+
+      </div>
+    </div>
+  </div>
+
+  <form action="{% url 'submit' prblm.problem_id %}" method="POST">
+    {% csrf_token %}
+    <fieldset>
+      <div class="mb-3">
+        <label for="user_submission" class="form-label submit-header submit-code-heading">submit solution</label>
+        <textarea class="form-control" name="user_submission" id="user_submission" rows="20"></textarea>
+      </div>
+      <div class="mb-3">
+        <label for="language" class="form-label">select language</label>
+        <select id="language" name="language" class="form-select">
+          <option>C++</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary mb-3">Submit</button>
+    </fieldset>
+  </form>
 </div>
 
 {% endblock content %}
