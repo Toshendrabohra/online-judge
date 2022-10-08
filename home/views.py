@@ -23,7 +23,7 @@ def index(request):
     return render(request,'home/index.html',context)
 
 def leaderboard(request):
-     latest =Submission.objects.all()[:15]
+     latest =Submission.objects.all()
      context = {
         "submissions": latest
      }
